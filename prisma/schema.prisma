@@ -1,0 +1,2147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model v_access_control_nodes {
+  access_control_node_uuid String @id @default(uuid())
+  access_control_uuid      String?
+  node_type                String?
+  node_cidr                String?
+  node_domain              String?
+  node_description         String?
+  insert_date              DateTime?
+  insert_user              String?
+  update_date              DateTime?
+  update_user              String?
+}
+
+model v_access_controls {
+  access_control_uuid       String @id @default(uuid())
+  access_control_name       String?
+  access_control_default    String?
+  access_control_description String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_apps {
+  app_uuid     String @id @default(uuid())
+  app_category String?
+  app_version  String?
+  app_enabled  String?
+}
+
+model v_bridges {
+  bridge_uuid         String @id @default(uuid())
+  domain_uuid         String?
+  bridge_name         String?
+  bridge_destination  String?
+  bridge_enabled      String?
+  bridge_description  String?
+  insert_date         DateTime?
+  insert_user         String?
+  update_date         DateTime?
+  update_user         String?
+}
+
+model v_call_block {
+  domain_uuid             String?
+  call_block_uuid         String @id @default(uuid())
+  call_block_name         String?
+  call_block_number       String?
+  call_block_count        Float?
+  call_block_action       String?
+  date_added              String?
+  call_block_enabled      String?
+  extension_uuid          String?
+  call_block_app          String?
+  call_block_data         String?
+  call_block_description  String?
+  call_block_direction    String?
+  call_block_country_code Float?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_call_broadcasts {
+  call_broadcast_uuid       String @id @default(uuid())
+  domain_uuid               String?
+  broadcast_name            String?
+  broadcast_description     String?
+  broadcast_timeout         Float?
+  broadcast_concurrent_limit Float?
+  recording_uuid            String?
+  broadcast_caller_id_name  String?
+  broadcast_caller_id_number String?
+  broadcast_destination_type String?
+  broadcast_phone_numbers   String?
+  broadcast_avmd            String?
+  broadcast_destination_data String?
+  broadcast_accountcode     String?
+  broadcast_start_time      Float?
+  broadcast_toll_allow      String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_call_center_agents {
+  call_center_agent_uuid String @id @default(uuid())
+  domain_uuid            String?
+  user_uuid              String?
+  agent_name             String?
+  agent_type             String?
+  agent_call_timeout     Float?
+  agent_id               String?
+  agent_password         String?
+  agent_contact          String?
+  agent_status           String?
+  agent_logout           String?
+  agent_max_no_answer    Float?
+  agent_wrap_up_time     Float?
+  agent_reject_delay_time Float?
+  agent_busy_delay_time  Float?
+  agent_no_answer_delay_time String?
+  agent_record           String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_call_center_queues {
+  call_center_queue_uuid String @id @default(uuid())
+  domain_uuid            String?
+  dialplan_uuid          String?
+  queue_name             String?
+  queue_extension        String?
+  queue_greeting         String?
+  queue_strategy         String?
+  queue_moh_sound        String?
+  queue_record_template  String?
+  queue_time_base_score  String?
+  queue_max_wait_time    Float?
+  queue_max_wait_time_with_no_agent Float?
+  queue_max_wait_time_with_no_agent_time_reached Float?
+  queue_tier_rules_apply String?
+  queue_tier_rule_wait_second Float?
+  queue_tier_rule_no_agent_no_wait String?
+  queue_timeout_action   String?
+  queue_discard_abandoned_after Float?
+  queue_abandoned_resume_allowed String?
+  queue_tier_rule_wait_multiply_level String?
+  queue_cid_prefix       String?
+  queue_announce_sound   String?
+  queue_announce_frequency Float?
+  queue_cc_exit_keys     String?
+  queue_description      String?
+  queue_time_base_score_sec Float?
+  queue_outbound_caller_id_name String?
+  queue_outbound_caller_id_number String?
+  queue_announce_position String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+  queue_email_address    String?
+}
+
+model v_call_center_tiers {
+  call_center_tier_uuid  String @id @default(uuid())
+  domain_uuid            String?
+  call_center_queue_uuid String?
+  call_center_agent_uuid String?
+  agent_name             String?
+  queue_name             String?
+  tier_level             Float?
+  tier_position          Float?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_call_flows {
+  domain_uuid            String?
+  call_flow_uuid         String @id @default(uuid())
+  dialplan_uuid          String?
+  call_flow_name         String?
+  call_flow_extension    String?
+  call_flow_feature_code String?
+  call_flow_context      String?
+  call_flow_status       String?
+  call_flow_pin_number   String?
+  call_flow_label        String?
+  call_flow_sound        String?
+  call_flow_app          String?
+  call_flow_data         String?
+  call_flow_alternate_label String?
+  call_flow_alternate_sound String?
+  call_flow_alternate_app String?
+  call_flow_alternate_data String?
+  call_flow_description  String?
+  call_flow_enabled      String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_call_recordings {
+  call_recording_uuid    String @id @default(uuid())
+  domain_uuid            String?
+  call_recording_name    String?
+  call_recording_path    String?
+  call_recording_length  String?
+  call_recording_date    DateTime?
+  call_direction         String?
+  call_recording_description String?
+  call_recording_base64  String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_clips {
+  clip_uuid      String @id @default(uuid())
+  clip_name      String?
+  clip_folder    String?
+  clip_text_start String?
+  clip_text_end  String?
+  clip_order     String?
+  clip_desc      String?
+  insert_date    DateTime?
+  insert_user    String?
+  update_date    DateTime?
+  update_user    String?
+}
+
+model v_conference_centers {
+  conference_center_uuid String @id @default(uuid())
+  domain_uuid            String?
+  dialplan_uuid          String?
+  conference_center_name String?
+  conference_center_extension String?
+  conference_center_pin_length Float?
+  conference_center_greeting String?
+  conference_center_description String?
+  conference_center_enabled String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_conference_control_details {
+  conference_control_detail_uuid String @id @default(uuid())
+  conference_control_uuid        String?
+  control_digits                 String?
+  control_action                 String?
+  control_data                   String?
+  control_enabled                String?
+  insert_date                    DateTime?
+  insert_user                    String?
+  update_date                    DateTime?
+  update_user                    String?
+}
+
+model v_conference_controls {
+  conference_control_uuid String @id @default(uuid())
+  control_name            String?
+  control_enabled         String?
+  control_description     String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_conference_profile_params {
+  conference_profile_param_uuid String @id @default(uuid())
+  conference_profile_uuid       String?
+  profile_param_name            String?
+  profile_param_value           String?
+  profile_param_enabled         String?
+  profile_param_description     String?
+  insert_date                   DateTime?
+  insert_user                   String?
+  update_date                   DateTime?
+  update_user                   String?
+}
+
+model v_conference_profiles {
+  conference_profile_uuid String @id @default(uuid())
+  profile_name            String?
+  profile_enabled         String?
+  profile_description     String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_conference_room_users {
+  conference_room_user_uuid String @id @default(uuid())
+  domain_uuid               String?
+  conference_room_uuid      String?
+  user_uuid                 String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_conference_rooms {
+  conference_room_uuid     String @id @default(uuid())
+  domain_uuid              String?
+  conference_center_uuid   String?
+  meeting_uuid             String?
+  conference_room_name     String?
+  profile                  String?
+  record                   String?
+  max_members              Float?
+  start_datetime           String?
+  stop_datetime            String?
+  wait_mod                 String?
+  announce                 String?
+  sounds                   String?
+  mute                     String?
+  created                  String?
+  created_by               String?
+  enabled                  String?
+  description              String?
+  moderator_endconf        String?
+  announce_name            String?
+  announce_count           String?
+  announce_recording       String?
+  moderator_pin            String?
+  participant_pin          String?
+  email_address            String?
+  account_code             String?
+  insert_date              DateTime?
+  insert_user              String?
+  update_date              DateTime?
+  update_user              String?
+}
+
+model v_conference_session_details {
+  conference_session_detail_uuid String @id @default(uuid())
+  domain_uuid                    String?
+  conference_session_uuid        String?
+  meeting_uuid                   String?
+  username                       String?
+  caller_id_name                 String?
+  caller_id_number               String?
+  uuid                           String?
+  moderator                      String?
+  network_addr                   String?
+  start_epoch                    Float?
+  end_epoch                      Float?
+  insert_date                    DateTime?
+  insert_user                    String?
+  update_date                    DateTime?
+  update_user                    String?
+}
+
+model v_conference_sessions {
+  conference_session_uuid String @id @default(uuid())
+  domain_uuid             String?
+  meeting_uuid            String?
+  profile                 String?
+  recording               String?
+  start_epoch             Float?
+  end_epoch               Float?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_conference_users {
+  conference_user_uuid String @id @default(uuid())
+  domain_uuid          String?
+  conference_uuid      String?
+  user_uuid            String?
+  insert_date          DateTime?
+  insert_user          String?
+  update_date          DateTime?
+  update_user          String?
+}
+
+model v_conferences {
+  conference_uuid           String @id @default(uuid())
+  domain_uuid               String?
+  dialplan_uuid             String?
+  conference_name           String?
+  conference_extension      String?
+  conference_pin_number     String?
+  conference_profile        String?
+  conference_flags          String?
+  conference_order          Float?
+  conference_description    String?
+  conference_enabled        String?
+  conference_email_address  String?
+  conference_account_code   String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_contact_addresses {
+  contact_address_uuid String @id @default(uuid())
+  domain_uuid          String?
+  contact_uuid         String?
+  address_type         String?
+  address_label        String?
+  address_primary      Float?
+  address_street       String?
+  address_extended     String?
+  address_community    String?
+  address_locality     String?
+  address_region       String?
+  address_postal_code  String?
+  address_country      String?
+  address_latitude     String?
+  address_longitude    String?
+  address_description  String?
+  insert_date          DateTime?
+  insert_user          String?
+  update_date          DateTime?
+  update_user          String?
+}
+
+model v_contact_attachments {
+  contact_attachment_uuid String @id @default(uuid())
+  domain_uuid             String?
+  contact_uuid            String?
+  attachment_primary      Float?
+  attachment_filename     String?
+  attachment_content      String?
+  attachment_description  String?
+  attachment_uploaded_date DateTime?
+  attachment_uploaded_user_uuid String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_contact_emails {
+  contact_email_uuid  String @id @default(uuid())
+  domain_uuid         String?
+  contact_uuid        String?
+  email_label         String?
+  email_primary       Float?
+  email_address       String?
+  email_description   String?
+  insert_date         DateTime?
+  insert_user         String?
+  update_date         DateTime?
+  update_user         String?
+}
+
+model v_contact_groups {
+  contact_group_uuid String @id @default(uuid())
+  domain_uuid        String?
+  contact_uuid       String?
+  group_uuid         String?
+  insert_date        DateTime?
+  insert_user        String?
+  update_date        DateTime?
+  update_user        String?
+}
+
+model v_contact_notes {
+  contact_note_uuid String @id @default(uuid())
+  domain_uuid       String?
+  contact_uuid      String?
+  contact_note      String?
+  last_mod_date     String?
+  last_mod_user     String?
+  insert_date       DateTime?
+  insert_user       String?
+  update_date       DateTime?
+  update_user       String?
+}
+
+model v_contact_phones {
+  contact_phone_uuid   String @id @default(uuid())
+  domain_uuid          String?
+  contact_uuid         String?
+  phone_type_voice     Float?
+  phone_type_fax       Float?
+  phone_type_video     Float?
+  phone_type_text      Float?
+  phone_label          String?
+  phone_primary        Float?
+  phone_number         String?
+  phone_extension      String?
+  phone_speed_dial     String?
+  phone_description    String?
+  phone_country_code   Float?
+  insert_date          DateTime?
+  insert_user          String?
+  update_date          DateTime?
+  update_user          String?
+}
+
+model v_contact_relations {
+  contact_relation_uuid String @id @default(uuid())
+  domain_uuid           String?
+  contact_uuid          String?
+  relation_label        String?
+  relation_contact_uuid String?
+  insert_date           DateTime?
+  insert_user           String?
+  update_date           DateTime?
+  update_user           String?
+}
+
+model v_contact_settings {
+  contact_setting_uuid   String @id @default(uuid())
+  contact_uuid           String?
+  domain_uuid            String?
+  contact_setting_category String?
+  contact_setting_subcategory String?
+  contact_setting_name   String?
+  contact_setting_value  String?
+  contact_setting_order  Float?
+  contact_setting_enabled String?
+  contact_setting_description String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_contact_times {
+  contact_time_uuid String @id @default(uuid())
+  domain_uuid       String?
+  contact_uuid      String?
+  user_uuid         String?
+  time_start        DateTime?
+  time_stop         DateTime?
+  time_description  String?
+  insert_date       DateTime?
+  insert_user       String?
+  update_date       DateTime?
+  update_user       String?
+}
+
+model v_contact_urls {
+  contact_url_uuid  String @id @default(uuid())
+  domain_uuid       String?
+  contact_uuid      String?
+  url_type          String?
+  url_label         String?
+  url_primary       Float?
+  url_address       String?
+  url_description   String?
+  insert_date       DateTime?
+  insert_user       String?
+  update_date       DateTime?
+  update_user       String?
+}
+
+model v_contact_users {
+  contact_user_uuid String @id @default(uuid())
+  domain_uuid       String?
+  contact_uuid      String?
+  user_uuid         String?
+  insert_date       DateTime?
+  insert_user       String?
+  update_date       DateTime?
+  update_user       String?
+}
+
+model v_contacts {
+  contact_uuid       String @id @default(uuid())
+  domain_uuid        String?
+  contact_parent_uuid String?
+  contact_type       String?
+  contact_organization String?
+  contact_name_prefix String?
+  contact_name_given String?
+  contact_name_middle String?
+  contact_name_family String?
+  contact_name_suffix String?
+  contact_nickname   String?
+  contact_title      String?
+  contact_role       String?
+  contact_category   String?
+  contact_url        String?
+  contact_time_zone  String?
+  contact_note       String?
+  last_mod_date      String?
+  last_mod_user      String?
+  insert_date        DateTime?
+  insert_user        String?
+  update_date        DateTime?
+  update_user        String?
+}
+
+model v_countries {
+  country_uuid  String @id @default(uuid())
+  country       String?
+  iso_a2        String?
+  iso_a3        String?
+  num           Float?
+  country_code  String?
+  insert_date   DateTime?
+  insert_user   String?
+  update_date   DateTime?
+  update_user   String?
+}
+
+model v_dashboard {
+  dashboard_uuid         String @id @default(uuid())
+  dashboard_name         String?
+  dashboard_path         String?
+  dashboard_column_span  Float?
+  dashboard_order        Float?
+  dashboard_enabled      Boolean?
+  dashboard_description  String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+  dashboard_details_state String?
+}
+
+model v_dashboard_groups {
+  dashboard_group_uuid String @id @default(uuid())
+  dashboard_uuid       String?
+  group_uuid           String?
+  insert_date          DateTime?
+  insert_user          String?
+  update_date          DateTime?
+  update_user          String?
+}
+
+model v_database_transactions {
+  database_transaction_uuid String @id @default(uuid())
+  domain_uuid               String?
+  user_uuid                 String?
+  app_name                  String?
+  app_uuid                  String?
+  transaction_code          String?
+  transaction_address       String?
+  transaction_type          String?
+  transaction_date          DateTime?
+  transaction_old           String?
+  transaction_new           String?
+  transaction_result        String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_databases {
+  database_uuid       String @id @default(uuid())
+  database_driver     String?
+  database_type       String?
+  database_host       String?
+  database_port       String?
+  database_name       String?
+  database_username   String?
+  database_password   String?
+  database_path       String?
+  database_description String?
+  insert_date         DateTime?
+  insert_user         String?
+  update_date         DateTime?
+  update_user         String?
+}
+
+model v_default_settings {
+  default_setting_uuid    String @id @default(uuid())
+  app_uuid                String?
+  default_setting_category String?
+  default_setting_subcategory String?
+  default_setting_name    String?
+  default_setting_value   String?
+  default_setting_order   Float?
+  default_setting_enabled Boolean?
+  default_setting_description String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_destinations {
+  destination_uuid        String @id @default(uuid())
+  domain_uuid             String?
+  dialplan_uuid           String?
+  fax_uuid                String?
+  destination_type        String?
+  destination_number      String?
+  destination_number_regex String?
+  destination_caller_id_name String?
+  destination_caller_id_number String?
+  destination_cid_name_prefix String?
+  destination_context     String?
+  destination_record      String?
+  destination_accountcode String?
+  destination_app         String?
+  destination_data        String?
+  destination_alternate_app String?
+  destination_alternate_data String?
+  destination_enabled     String?
+  destination_description String?
+  destination_type_voice  Float?
+  destination_type_fax    Float?
+  destination_type_text   Float?
+  destination_prefix      String?
+  user_uuid               String?
+  group_uuid              String?
+  destination_trunk_prefix String?
+  destination_area_code   String?
+  destination_condition_field String?
+  destination_hold_music  String?
+  destination_distinctive_ring String?
+  destination_type_emergency Float?
+  destination_conditions  Json?
+  destination_actions     Json?
+  destination_order       Float?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_device_keys {
+  device_key_uuid         String @id @default(uuid())
+  domain_uuid             String?
+  device_uuid             String?
+  device_profile_uuid     String?
+  device_key_id           Float?
+  device_key_category     String?
+  device_key_vendor       String?
+  device_key_type         String?
+  device_key_line         Float?
+  device_key_value        String?
+  device_key_extension    String?
+  device_key_protected    String?
+  device_key_label        String?
+  device_key_icon         String?
+  device_key_subtype      String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_device_lines {
+  device_line_uuid        String @id @default(uuid())
+  domain_uuid             String?
+  device_uuid             String?
+  line_number             String?
+  server_address          String?
+  server_address_primary  String?
+  server_address_secondary String?
+  outbound_proxy_primary  String?
+  outbound_proxy_secondary String?
+  display_name            String?
+  user_id                 String?
+  auth_id                 String?
+  password                String?
+  sip_port                Float?
+  sip_transport           String?
+  register_expires        Float?
+  shared_line             String?
+  enabled                 String?
+  label                   String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_device_profile_keys {
+  device_profile_key_uuid String @id @default(uuid())
+  domain_uuid             String?
+  device_profile_uuid     String?
+  profile_key_id          Float?
+  profile_key_category    String?
+  profile_key_vendor      String?
+  profile_key_type        String?
+  profile_key_line        Float?
+  profile_key_value       String?
+  profile_key_extension   String?
+  profile_key_protected   String?
+  profile_key_label       String?
+  profile_key_icon        String?
+  profile_key_subtype     String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_device_profile_settings {
+  device_profile_setting_uuid String @id @default(uuid())
+  domain_uuid                 String?
+  device_profile_uuid         String?
+  profile_setting_name        String?
+  profile_setting_value       String?
+  profile_setting_enabled     String?
+  profile_setting_description String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_device_profiles {
+  device_profile_uuid     String @id @default(uuid())
+  domain_uuid             String?
+  device_profile_name     String?
+  device_profile_enabled  String?
+  device_profile_description String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_device_settings {
+  device_setting_uuid     String @id @default(uuid())
+  device_uuid             String?
+  domain_uuid             String?
+  device_setting_category String?
+  device_setting_subcategory String?
+  device_setting_name     String?
+  device_setting_value    String?
+  device_setting_enabled  String?
+  device_setting_description String?
+  device_profile_uuid     String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_device_vendor_function_groups {
+  device_vendor_function_group_uuid String @id @default(uuid())
+  device_vendor_function_uuid       String?
+  device_vendor_uuid                String?
+  group_name                        String?
+  group_uuid                        String?
+  insert_date                       DateTime?
+  insert_user                       String?
+  update_date                       DateTime?
+  update_user                       String?
+}
+
+model v_device_vendor_functions {
+  device_vendor_function_uuid String @id @default(uuid())
+  device_vendor_uuid          String?
+  type                        String?
+  value                       String?
+  enabled                     String?
+  description                 String?
+  subtype                     String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_device_vendors {
+  device_vendor_uuid  String @id @default(uuid())
+  name                String?
+  enabled             String?
+  description         String?
+  insert_date         DateTime?
+  insert_user         String?
+  update_date         DateTime?
+  update_user         String?
+}
+
+model v_devices {
+  device_uuid               String @id @default(uuid())
+  domain_uuid               String?
+  device_profile_uuid       String?
+  device_mac_address        String?
+  device_label              String?
+  device_vendor             String?
+  device_model              String?
+  device_firmware_version   String?
+  device_enabled            String?
+  device_enabled_date       DateTime?
+  device_template           String?
+  device_user_uuid          String?
+  device_username           String?
+  device_password           String?
+  device_uuid_alternate     String?
+  device_description        String?
+  device_provisioned_date   DateTime?
+  device_provisioned_method String?
+  device_provisioned_ip     String?
+  device_location           String?
+  device_provisioned_agent  String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_dialplan_details {
+  dialplan_detail_uuid      String @id @default(uuid())
+  domain_uuid               String?
+  dialplan_uuid             String?
+  dialplan_detail_tag       String?
+  dialplan_detail_type      String?
+  dialplan_detail_data      String?
+  dialplan_detail_break     String?
+  dialplan_detail_inline    String?
+  dialplan_detail_group     Float?
+  dialplan_detail_order     Float?
+  dialplan_detail_enabled   Boolean?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_dialplans {
+  dialplan_uuid        String @id @default(uuid())
+  domain_uuid          String?
+  app_uuid             String?
+  hostname             String?
+  dialplan_context     String?
+  dialplan_name        String?
+  dialplan_number      String?
+  dialplan_destination String?
+  dialplan_continue    String?
+  dialplan_xml         String?
+  dialplan_order       Float?
+  dialplan_enabled     String?
+  dialplan_description String?
+  insert_date          DateTime?
+  insert_user          String?
+  update_date          DateTime?
+  update_user          String?
+}
+
+model v_domain_settings {
+  domain_setting_uuid    String @id @default(uuid())
+  domain_uuid            String?
+  app_uuid               String?
+  domain_setting_category String?
+  domain_setting_subcategory String?
+  domain_setting_name    String?
+  domain_setting_value   String?
+  domain_setting_order   Float?
+  domain_setting_enabled Boolean?
+  domain_setting_description String?
+  insert_date            DateTime?
+  insert_user            String?
+  update_date            DateTime?
+  update_user            String?
+}
+
+model v_domains {
+  domain_uuid        String @id @default(uuid())
+  domain_parent_uuid String?
+  domain_name        String?
+  domain_enabled     Boolean?
+  domain_description String?
+  insert_date        DateTime?
+  insert_user        String?
+  update_date        DateTime?
+  update_user        String?
+}
+
+model v_email_logs {
+  email_log_uuid String @id @default(uuid())
+  call_uuid      String?
+  domain_uuid    String?
+  sent_date      DateTime?
+  type           String?
+  status         String?
+  email          String?
+  insert_date    DateTime?
+  insert_user    String?
+  update_date    DateTime?
+  update_user    String?
+}
+
+model v_email_queue {
+  email_queue_uuid        String @id @default(uuid())
+  domain_uuid             String?
+  hostname                String?
+  email_date              DateTime?
+  email_from              String?
+  email_to                String?
+  email_subject           String?
+  email_body              String?
+  email_status            String?
+  email_retry_count       Float?
+  email_action_before     String?
+  email_action_after      String?
+  email_uuid              String?
+  email_transcription     String?
+  email_response          String?
+  insert_date             DateTime?
+  insert_user             String?
+  update_date             DateTime?
+  update_user             String?
+}
+
+model v_email_queue_attachments {
+  email_queue_attachment_uuid String @id @default(uuid())
+  domain_uuid                 String?
+  email_queue_uuid            String?
+  email_attachment_type       String?
+  email_attachment_path       String?
+  email_attachment_name       String?
+  email_attachment_base64     String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+  email_attachment_mime_type  String?
+  email_attachment_cid        String?
+}
+
+model v_email_templates {
+  email_template_uuid String @id @default(uuid())
+  domain_uuid         String?
+  template_language   String?
+  template_category   String?
+  template_subcategory String?
+  template_subject    String?
+  template_body       String?
+  template_type       String?
+  template_enabled    String?
+  template_description String?
+  insert_date         DateTime?
+  insert_user         String?
+  update_date         DateTime?
+  update_user         String?
+}
+
+model v_event_guard_logs {
+  event_guard_log_uuid String @id @default(uuid())
+  hostname             String?
+  log_date             DateTime?
+  filter               String?
+  ip_address           String?
+  extension            String?
+  user_agent           String?
+  log_status           String?
+  insert_date          DateTime?
+  insert_user          String?
+  update_date          DateTime?
+  update_user          String?
+}
+
+model v_extension_settings {
+  extension_setting_uuid    String @id @default(uuid())
+  domain_uuid               String?
+  extension_uuid            String?
+  extension_setting_type    String?
+  extension_setting_name    String?
+  extension_setting_value   String?
+  extension_setting_enabled Boolean?
+  extension_setting_description String?
+  insert_date               DateTime?
+  insert_user               String?
+  update_date               DateTime?
+  update_user               String?
+}
+
+model v_extension_users {
+  extension_user_uuid String @id @default(uuid())
+  domain_uuid         String?
+  extension_uuid      String?
+  user_uuid           String?
+  insert_date         DateTime?
+  insert_user         String?
+  update_date         DateTime?
+  update_user         String?
+}
+
+model v_extensions {
+  extension_uuid                   String @id @default(uuid())
+  domain_uuid                      String?
+  extension                        String?
+  number_alias                     String?
+  password                         String?
+  accountcode                      String?
+  effective_caller_id_name         String?
+  effective_caller_id_number       String?
+  outbound_caller_id_name          String?
+  outbound_caller_id_number        String?
+  emergency_caller_id_name         String?
+  emergency_caller_id_number       String?
+  directory_first_name             String?
+  directory_last_name              String?
+  directory_visible                String?
+  directory_exten_visible          String?
+  limit_max                        String?
+  limit_destination                String?
+  missed_call_app                  String?
+  missed_call_data                 String?
+  user_context                     String?
+  toll_allow                       String?
+  call_timeout                     Float?
+  call_group                       String?
+  call_screen_enabled              String?
+  user_record                      String?
+  hold_music                       String?
+  auth_acl                         String?
+  cidr                             String?
+  sip_force_contact                String?
+  nibble_account                   String?
+  sip_force_expires                Float?
+  mwi_account                      String?
+  sip_bypass_media                 String?
+  unique_id                        Float?
+  dial_string                      String?
+  dial_user                        String?
+  dial_domain                      String?
+  do_not_disturb                   String?
+  forward_all_destination          String?
+  forward_all_enabled              String?
+  forward_busy_destination         String?
+  forward_busy_enabled             String?
+  forward_no_answer_destination    String?
+  forward_no_answer_enabled        String?
+  forward_user_not_registered_destination String?
+  forward_user_not_registered_enabled String?
+  follow_me_uuid                   String?
+  forward_caller_id_uuid           String?
+  follow_me_enabled                String?
+  follow_me_destinations           String?
+  enabled                          String?
+  description                      String?
+  absolute_codec_string            String?
+  force_ping                       String?
+  max_registrations                String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_fax {
+  fax_uuid                         String @id @default(uuid())
+  domain_uuid                      String?
+  dialplan_uuid                    String?
+  fax_extension                    String?
+  fax_destination_number           String?
+  fax_prefix                       String?
+  fax_name                         String?
+  fax_email                        String?
+  fax_email_connection_type        String?
+  fax_email_connection_host        String?
+  fax_email_connection_port        String?
+  fax_email_connection_security    String?
+  fax_email_connection_validate    String?
+  fax_email_connection_username    String?
+  fax_email_connection_password    String?
+  fax_email_connection_mailbox     String?
+  fax_email_inbound_subject_tag    String?
+  fax_email_outbound_subject_tag   String?
+  fax_email_outbound_authorized_senders String?
+  fax_pin_number                   String?
+  fax_caller_id_name               String?
+  fax_caller_id_number             String?
+  fax_forward_number               String?
+  fax_send_greeting                String?
+  fax_send_channels                Float?
+  fax_description                  String?
+  accountcode                      String?
+  fax_toll_allow                   String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_fax_files {
+  fax_file_uuid                    String @id @default(uuid())
+  domain_uuid                      String?
+  fax_uuid                         String?
+  fax_mode                         String?
+  fax_destination                  String?
+  fax_file_type                    String?
+  fax_file_path                    String?
+  fax_caller_id_name               String?
+  fax_caller_id_number             String?
+  fax_date                         DateTime?
+  fax_epoch                        Float?
+  fax_base64                       String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_fax_logs {
+  fax_log_uuid                     String @id @default(uuid())
+  domain_uuid                      String?
+  fax_uuid                         String?
+  fax_success                      String?
+  fax_result_code                  Float?
+  fax_result_text                  String?
+  fax_file                         String?
+  fax_ecm_used                     String?
+  fax_local_station_id             String?
+  fax_document_transferred_pages   Float?
+  fax_document_total_pages         Float?
+  fax_image_resolution             String?
+  fax_image_size                   Float?
+  fax_bad_rows                     Float?
+  fax_transfer_rate                Float?
+  fax_retry_attempts               Float?
+  fax_retry_limit                  Float?
+  fax_retry_sleep                  Float?
+  fax_uri                          String?
+  fax_date                         DateTime?
+  fax_epoch                        Float?
+  fax_duration                     Float?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_fax_queue {
+  fax_queue_uuid                   String @id @default(uuid())
+  domain_uuid                      String?
+  fax_uuid                         String?
+  origination_uuid                 String?
+  fax_log_uuid                     String?
+  fax_date                         DateTime?
+  hostname                         String?
+  fax_caller_id_name               String?
+  fax_caller_id_number             String?
+  fax_number                       String?
+  fax_prefix                       String?
+  fax_email_address                String?
+  fax_file                         String?
+  fax_status                       String?
+  fax_retry_date                   DateTime?
+  fax_notify_sent                  Boolean?
+  fax_notify_date                  DateTime?
+  fax_retry_count                  Float?
+  fax_accountcode                  String?
+  fax_command                      String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_fax_tasks {
+  fax_task_uuid                    String @id @default(uuid())
+  fax_uuid                         String?
+  task_next_time                   DateTime?
+  task_lock_time                   DateTime?
+  task_fax_file                    String?
+  task_wav_file                    String?
+  task_uri                         String?
+  task_dial_string                 String?
+  task_dtmf                        String?
+  task_reply_address               String?
+  task_interrupted                 String?
+  task_status                      Float?
+  task_no_answer_counter           Float?
+  task_no_answer_retry_counter     Float?
+  task_retry_counter               Float?
+  task_description                 String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_fax_users {
+  fax_user_uuid                    String @id @default(uuid())
+  domain_uuid                      String?
+  fax_uuid                         String?
+  user_uuid                        String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_follow_me {
+  follow_me_uuid                   String @id @default(uuid())
+  domain_uuid                      String?
+  cid_name_prefix                  String?
+  cid_number_prefix                String?
+  dial_string                      String?
+  follow_me_enabled                String?
+  follow_me_caller_id_uuid         String?
+  follow_me_ignore_busy            String?
+  insert_date                      DateTime?
+  insert_user                      String?
+  update_date                      DateTime?
+  update_user                      String?
+}
+
+model v_follow_me_destinations {
+  follow_me_destination_uuid String @id @default(uuid())
+  domain_uuid                String?
+  follow_me_uuid             String?
+  follow_me_destination      String?
+  follow_me_delay            String?
+  follow_me_timeout          String?
+  follow_me_prompt           String?
+  follow_me_order            Float?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_gateways {
+  gateway_uuid               String @id @default(uuid())
+  domain_uuid                String?
+  gateway                    String?
+  username                   String?
+  password                   String?
+  distinct_to                String?
+  auth_username              String?
+  realm                      String?
+  from_user                  String?
+  from_domain                String?
+  proxy                      String?
+  register_proxy             String?
+  outbound_proxy             String?
+  expire_seconds             Float?
+  register                   String?
+  register_transport         String?
+  retry_seconds              Float?
+  extension                  String?
+  ping                       String?
+  caller_id_in_from          String?
+  supress_cng                String?
+  sip_cid_type               String?
+  codec_prefs                String?
+  channels                   Float?
+  extension_in_contact       String?
+  context                    String?
+  profile                    String?
+  hostname                   String?
+  enabled                    String?
+  description                String?
+  ping_min                   String?
+  ping_max                   String?
+  contact_in_ping            String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+  contact_params             String?
+}
+
+model v_group_permissions {
+  group_permission_uuid      String @id @default(uuid())
+  domain_uuid                String?
+  permission_name            String?
+  group_name                 String?
+  group_uuid                 String?
+  permission_protected       String?
+  permission_assigned        String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_groups {
+  group_uuid                 String @id @default(uuid())
+  domain_uuid                String?
+  group_name                 String?
+  group_protected            String?
+  group_description          String?
+  group_level                Float?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_ivr_menu_options {
+  ivr_menu_option_uuid       String @id @default(uuid())
+  ivr_menu_uuid              String?
+  domain_uuid                String?
+  ivr_menu_option_digits     String?
+  ivr_menu_option_action     String?
+  ivr_menu_option_param      String?
+  ivr_menu_option_order      Float?
+  ivr_menu_option_description String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+  ivr_menu_option_enabled    Boolean?
+}
+
+model v_ivr_menus {
+  ivr_menu_uuid              String @id @default(uuid())
+  domain_uuid                String?
+  dialplan_uuid              String?
+  ivr_menu_name              String?
+  ivr_menu_extension         String?
+  ivr_menu_language          String?
+  ivr_menu_greet_long        String?
+  ivr_menu_greet_short       String?
+  ivr_menu_invalid_sound     String?
+  ivr_menu_exit_sound        String?
+  ivr_menu_confirm_macro     String?
+  ivr_menu_confirm_key       String?
+  ivr_menu_tts_engine        String?
+  ivr_menu_tts_voice         String?
+  ivr_menu_confirm_attempts  Float?
+  ivr_menu_timeout           Float?
+  ivr_menu_exit_app          String?
+  ivr_menu_exit_data         String?
+  ivr_menu_inter_digit_timeout Float?
+  ivr_menu_max_failures      Float?
+  ivr_menu_max_timeouts      Float?
+  ivr_menu_digit_len         Float?
+  ivr_menu_direct_dial       String?
+  ivr_menu_ringback          String?
+  ivr_menu_cid_prefix        String?
+  ivr_menu_context           String?
+  ivr_menu_enabled           String?
+  ivr_menu_description       String?
+  ivr_menu_parent_uuid       String?
+  ivr_menu_dialect           String?
+  ivr_menu_voice             String?
+  ivr_menu_pin_number        String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_languages {
+  language_uuid              String @id @default(uuid())
+  language                   String?
+  code                       String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_meeting_users {
+  meeting_user_uuid          String @id @default(uuid())
+  domain_uuid                String?
+  meeting_uuid               String?
+  user_uuid                  String?
+}
+
+model v_meetings {
+  meeting_uuid               String @id @default(uuid())
+  domain_uuid                String?
+  moderator_pin              Float?
+  participant_pin            Float?
+  enabled                    String?
+  description                String?
+}
+
+model v_menu_item_groups {
+  menu_item_group_uuid       String @id @default(uuid())
+  menu_uuid                  String?
+  menu_item_uuid             String?
+  group_name                 String?
+  group_uuid                 String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_menu_items {
+  menu_item_uuid             String @id @default(uuid())
+  menu_uuid                  String?
+  menu_item_parent_uuid      String?
+  menu_item_title            String?
+  menu_item_link             String?
+  menu_item_icon             String?
+  menu_item_category         String?
+  menu_item_protected        String?
+  menu_item_order            Float?
+  menu_item_description      String?
+  menu_item_add_user         String?
+  menu_item_add_date         String?
+  menu_item_mod_user         String?
+  menu_item_mod_date         String?
+  uuid                       String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_menu_languages {
+  menu_language_uuid         String @id @default(uuid())
+  menu_uuid                  String?
+  menu_item_uuid             String?
+  menu_language              String?
+  menu_item_title            String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_menus {
+  menu_uuid                  String @id @default(uuid())
+  menu_name                  String?
+  menu_language              String?
+  menu_description           String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_message_media {
+  message_media_uuid         String @id @default(uuid())
+  message_uuid               String?
+  domain_uuid                String?
+  user_uuid                  String?
+  message_media_type         String?
+  message_media_url          String?
+  message_media_content      String?
+}
+
+model v_messages {
+  message_uuid               String @id @default(uuid())
+  domain_uuid                String?
+  user_uuid                  String?
+  contact_uuid               String?
+  message_type               String?
+  message_direction          String?
+  message_date               DateTime?
+  message_from               String?
+  message_to                 String?
+  message_text               String?
+  message_json               String?
+}
+
+model v_modules {
+  module_uuid                String @id @default(uuid())
+  module_label               String?
+  module_name                String?
+  module_category            String?
+  module_order               Float?
+  module_enabled             String?
+  module_default_enabled     String?
+  module_description         String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_music_on_hold {
+  music_on_hold_uuid         String @id @default(uuid())
+  domain_uuid                String?
+  music_on_hold_name         String?
+  music_on_hold_path         String?
+  music_on_hold_rate         Float?
+  music_on_hold_shuffle      String?
+  music_on_hold_channels     Float?
+  music_on_hold_interval     Float?
+  music_on_hold_timer_name   String?
+  music_on_hold_chime_list   String?
+  music_on_hold_chime_freq   Float?
+  music_on_hold_chime_max    Float?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_notifications {
+  notification_uuid          String @id @default(uuid())
+  project_notifications      String?
+  insert_date                DateTime?
+  insert_user                String?
+  update_date                DateTime?
+  update_user                String?
+}
+
+model v_number_translation_details {
+  number_translation_detail_uuid String @id @default(uuid())
+  number_translation_uuid        String?
+  number_translation_detail_regex String?
+  number_translation_detail_replace String?
+  number_translation_detail_order String?
+  insert_date                    DateTime?
+  insert_user                    String?
+  update_date                    DateTime?
+  update_user                    String?
+}
+
+model v_number_translations {
+  number_translation_uuid     String @id @default(uuid())
+  number_translation_name     String?
+  number_translation_enabled  String?
+  number_translation_description String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_permissions {
+  permission_uuid             String @id @default(uuid())
+  application_uuid            String?
+  application_name            String?
+  permission_name             String?
+  permission_description      String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_phrase_details {
+  phrase_detail_uuid          String @id @default(uuid())
+  phrase_uuid                 String?
+  domain_uuid                 String?
+  phrase_detail_group         Float?
+  phrase_detail_tag           String?
+  phrase_detail_pattern       String?
+  phrase_detail_function      String?
+  phrase_detail_data          String?
+  phrase_detail_method        String?
+  phrase_detail_type          String?
+  phrase_detail_order         String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_phrases {
+  phrase_uuid                 String @id @default(uuid())
+  domain_uuid                 String?
+  phrase_name                 String?
+  phrase_language             String?
+  phrase_description          String?
+  phrase_enabled              String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_pin_numbers {
+  pin_number_uuid             String @id @default(uuid())
+  domain_uuid                 String?
+  pin_number                  String?
+  accountcode                 String?
+  enabled                     String?
+  description                 String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_recordings {
+  recording_uuid              String @id @default(uuid())
+  domain_uuid                 String?
+  recording_filename          String?
+  recording_name              String?
+  recording_description       String?
+  recording_base64            String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_ring_group_destinations {
+  ring_group_destination_uuid String @id @default(uuid())
+  domain_uuid                 String?
+  ring_group_uuid             String?
+  destination_number          String?
+  destination_delay           Float?
+  destination_timeout         Float?
+  destination_prompt          Float?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+  destination_enabled         Boolean?
+}
+
+model v_ring_group_users {
+  ring_group_user_uuid        String @id @default(uuid())
+  domain_uuid                 String?
+  ring_group_uuid             String?
+  user_uuid                   String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_ring_groups {
+  ring_group_uuid             String @id @default(uuid())
+  domain_uuid                 String?
+  ring_group_name             String?
+  ring_group_extension        String?
+  ring_group_greeting         String?
+  ring_group_context          String?
+  ring_group_call_timeout     Float?
+  ring_group_forward_destination String?
+  ring_group_forward_enabled  String?
+  ring_group_caller_id_name   String?
+  ring_group_caller_id_number String?
+  ring_group_cid_name_prefix  String?
+  ring_group_cid_number_prefix String?
+  ring_group_strategy         String?
+  ring_group_timeout_app      String?
+  ring_group_timeout_data     String?
+  ring_group_distinctive_ring String?
+  ring_group_ringback         String?
+  ring_group_missed_call_app  String?
+  ring_group_missed_call_data String?
+  ring_group_enabled          String?
+  ring_group_description      String?
+  dialplan_uuid               String?
+  ring_group_forward_toll_allow String?
+  ring_group_follow_me_enabled String?
+  ring_group_call_forward_enabled String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_services {
+  service_uuid                String @id @default(uuid())
+  domain_uuid                 String?
+  service_name                String?
+  service_type                String?
+  service_data                String?
+  service_cmd_start           String?
+  service_cmd_stop            String?
+  service_cmd_restart         String?
+  service_description         String?
+}
+
+model v_settings {
+  setting_uuid                String @id @default(uuid())
+  numbering_plan              String?
+  event_socket_ip_address     String?
+  event_socket_port           String?
+  event_socket_password       String?
+  event_socket_acl            String?
+  xml_rpc_http_port           String?
+  xml_rpc_auth_realm          String?
+  xml_rpc_auth_user           String?
+  xml_rpc_auth_pass           String?
+  admin_pin                   Float?
+  mod_shout_decoder           String?
+  mod_shout_volume            String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_sip_profile_domains {
+  sip_profile_domain_uuid     String @id @default(uuid())
+  sip_profile_uuid            String?
+  sip_profile_domain_name     String?
+  sip_profile_domain_alias    String?
+  sip_profile_domain_parse    String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_sip_profile_settings {
+  sip_profile_setting_uuid    String @id @default(uuid())
+  sip_profile_uuid            String?
+  sip_profile_setting_name    String?
+  sip_profile_setting_value   String?
+  sip_profile_setting_enabled String?
+  sip_profile_setting_description String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_sip_profiles {
+  sip_profile_uuid            String @id @default(uuid())
+  sip_profile_name            String?
+  sip_profile_hostname        String?
+  sip_profile_enabled         String?
+  sip_profile_description     String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_sofia_global_settings {
+  sofia_global_setting_uuid   String @id @default(uuid())
+  global_setting_name         String?
+  global_setting_value        String?
+  global_setting_enabled      Boolean?
+  global_setting_description  String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_software {
+  software_uuid               String @id @default(uuid())
+  software_name               String?
+  software_url                String?
+  software_version            String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_streams {
+  stream_uuid                 String @id @default(uuid())
+  domain_uuid                 String?
+  stream_name                 String?
+  stream_location             String?
+  stream_enabled              String?
+  stream_description          String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_user_groups {
+  user_group_uuid             String @id @default(uuid())
+  domain_uuid                 String?
+  group_name                  String?
+  group_uuid                  String?
+  user_uuid                   String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_user_logs {
+  user_log_uuid               String @id @default(uuid())
+  domain_uuid                 String?
+  timestamp                   DateTime?
+  user_uuid                   String?
+  username                    String?
+  type                        String?
+  result                      String?
+  remote_address              String?
+  user_agent                  String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_user_settings {
+  user_setting_uuid           String @id @default(uuid())
+  user_uuid                   String?
+  domain_uuid                 String?
+  user_setting_category       String?
+  user_setting_subcategory    String?
+  user_setting_name           String?
+  user_setting_value          String?
+  user_setting_order          Float?
+  user_setting_enabled        Boolean?
+  user_setting_description    String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_users {
+  user_uuid                   String @id @default(uuid())
+  domain_uuid                 String?
+  username                    String?
+  password                    String?
+  salt                        String?
+  contact_uuid                String?
+  user_status                 String?
+  api_key                     String?
+  user_enabled                String?
+  add_user                    String?
+  add_date                    String?
+  user_email                  String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+  user_totp_secret            String?
+}
+
+model v_vars {
+  var_uuid                    String @id @default(uuid())
+  var_category                String?
+  var_name                    String?
+  var_value                   String?
+  var_command                 String?
+  var_hostname                String?
+  var_enabled                 String?
+  var_order                   Float?
+  var_description             String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_voicemail_destinations {
+  voicemail_destination_uuid  String @id @default(uuid())
+  domain_uuid                 String?
+  voicemail_uuid              String?
+  voicemail_uuid_copy         String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_voicemail_greetings {
+  voicemail_greeting_uuid     String @id @default(uuid())
+  domain_uuid                 String?
+  voicemail_id                String?
+  greeting_id                 Float?
+  greeting_name               String?
+  greeting_filename           String?
+  greeting_description        String?
+  greeting_base64             String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_voicemail_messages {
+  voicemail_message_uuid      String @id @default(uuid())
+  domain_uuid                 String?
+  voicemail_uuid              String?
+  created_epoch               Float?
+  read_epoch                  Float?
+  caller_id_name              String?
+  caller_id_number            String?
+  message_length              Float?
+  message_status              String?
+  message_priority            String?
+  message_intro_base64        String?
+  message_base64              String?
+  message_transcription       String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_voicemail_options {
+  voicemail_option_uuid       String @id @default(uuid())
+  domain_uuid                 String?
+  voicemail_uuid              String?
+  voicemail_option_digits     String?
+  voicemail_option_action     String?
+  voicemail_option_param      String?
+  voicemail_option_order      Float?
+  voicemail_option_description String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_voicemails {
+  voicemail_uuid              String @id @default(uuid())
+  domain_uuid                 String?
+  voicemail_id                String?
+  voicemail_password          String?
+  greeting_id                 Float?
+  voicemail_alternate_greet_id Float?
+  voicemail_mail_to           String?
+  voicemail_sms_to            String?
+  voicemail_transcription_enabled String?
+  voicemail_attach_file       String?
+  voicemail_file              String?
+  voicemail_local_after_email String?
+  voicemail_enabled           String?
+  voicemail_description       String?
+  voicemail_name_base64       String?
+  voicemail_tutorial          String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+}
+
+model v_xml_cdr {
+  xml_cdr_uuid                String @id @default(uuid())
+  domain_uuid                 String?
+  extension_uuid              String?
+  domain_name                 String?
+  accountcode                 String?
+  direction                   String?
+  default_language            String?
+  context                     String?
+  caller_id_name              String?
+  caller_id_number            String?
+  caller_destination          String?
+  source_number               String?
+  destination_number          String?
+  start_epoch                 Float?
+  start_stamp                 DateTime?
+  answer_stamp                DateTime?
+  answer_epoch                Float?
+  end_epoch                   Float?
+  end_stamp                   DateTime?
+  duration                    Float?
+  mduration                   Float?
+  billsec                     Float?
+  billmsec                    Float?
+  bridge_uuid                 String?
+  read_codec                  String?
+  read_rate                   String?
+  write_codec                 String?
+  write_rate                  String?
+  remote_media_ip             String?
+  network_addr                String?
+  record_path                 String?
+  record_name                 String?
+  leg                         String?
+  pdd_ms                      Float?
+  rtp_audio_in_mos            Float?
+  last_app                    String?
+  last_arg                    String?
+  cc_side                     String?
+  cc_member_uuid              String?
+  cc_queue_joined_epoch       Float?
+  cc_queue                    String?
+  cc_member_session_uuid      String?
+  cc_agent_uuid               String?
+  cc_agent                    String?
+  cc_agent_type               String?
+  cc_agent_bridged            String?
+  cc_queue_answered_epoch     Float?
+  cc_queue_terminated_epoch   Float?
+  cc_queue_canceled_epoch     Float?
+  cc_cancel_reason            String?
+  cc_cause                    String?
+  waitsec                     Float?
+  conference_name             String?
+  conference_uuid             String?
+  conference_member_id        String?
+  digits_dialed               String?
+  pin_number                  String?
+  hangup_cause                String?
+  hangup_cause_q850           Float?
+  sip_hangup_disposition      String?
+  xml                         String?
+  json                        Json?
+  missed_call                 Boolean?
+  sip_call_id                 String?
+  originating_leg_uuid        String?
+  voicemail_message           Boolean?
+  call_center_queue_uuid      String?
+  insert_date                 DateTime?
+  insert_user                 String?
+  update_date                 DateTime?
+  update_user                 String?
+  record_length               Float?
+}
+
+// Views
+model view_call_block {
+  domain_uuid            String?
+  call_block_uuid        String @id
+  call_block_direction   String?
+  extension_uuid         String?
+  call_block_name        String?
+  call_block_country_code Float?
+  call_block_number      String?
+  extension              String?
+  number_alias           String?
+  call_block_count       Float?
+  call_block_app         String?
+  call_block_data        String?
+  date_added             String?
+  call_block_enabled     String?
+  call_block_description String?
+}
+
+model view_call_recordings {
+  domain_uuid            String?
+  call_recording_uuid    String @id
+  caller_id_name         String?
+  caller_id_number       String?
+  caller_destination     String?
+  destination_number     String?
+  call_recording_name    String?
+  call_recording_path    String?
+  call_recording_length  String?
+  call_recording_date    DateTime?
+  call_direction         String?
+}
+
+model view_groups {
+  domain_uuid            String?
+  group_uuid             String @id
+  group_name             String?
+  domain_name            String?
+  group_permissions      Int?
+  group_members          Int?
+  group_level            Float?
+  group_protected        String?
+  group_description      String?
+}
+
+model view_users {
+  domain_uuid            String?
+  user_uuid              String @id
+  domain_name            String?
+  username               String?
+  user_status            String?
+  user_enabled           String?
+  add_date               String?
+  contact_uuid           String?
+  contact_organization   String?
+  contact_name           String?
+  contact_name_given     String?
+  contact_name_family    String?
+  group_names            String?
+  group_uuids            String?
+  group_level            Float?
+}

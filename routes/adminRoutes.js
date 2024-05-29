@@ -2,12 +2,21 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 
+// user crud and search function
 router.get('/user_list', adminController.userList);
-
 router.post('/user_create', adminController.userCreate);
 router.get('/user_create', adminController.userCreate);
-router.put('/user_update/:id', adminController.userCreate);
-router.get('/user_read/:id', adminController.userCreate);
-router.delete('/user_delete/:id', adminController.userCreate);
+router.get('/user_update/:id', adminController.userUpdate);
+router.put('/user_update/:id', adminController.userUpdate);
+router.get('/user_read/:id', adminController.userRead);
+router.delete('/user_delete/:id', adminController.userDelete);
+
+// domain crud and search function
+router.get('/domain_list', adminController.domainList);
+router.post('/domain_create', adminController.domainCreate);
+router.get('/domain_update/:id', adminController.domainUpdate);
+router.put('/domain_update/:id', adminController.domainUpdate);
+router.get('/domain_read/:id', adminController.domainRead);
+router.put('/domain_set_status/:id', adminController.domainSetStatus);
 
 module.exports = router;

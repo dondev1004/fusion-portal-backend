@@ -4,7 +4,6 @@ const { prisma } = require('../utils/prisma');
 const { resCode, resMessage } = require('../utils/resCode');
 const { isEmpty } = require('../utils/isEmpty');
 const { v4: uuidv4 } = require('uuid');
-const { formatDate } = require('../utils/formatDate');
 const { userRole } = require('../utils/userRole');
 const { checkPassword } = require('../utils/checkPassword');
 const { checkEmail } = require('../utils/checkEmail');
@@ -63,28 +62,33 @@ exports.adminRegister = async (req, res) => {
                     password: await hash(password, process.env.PASSWORD_DEFAULT, { cost: 10 }),
                     contact_uuid: newContact.contact_uuid,
                     user_enabled: 'true',
-                    add_date: formatDate(new Date()),
+                    add_date: new Date(),
                 },
             });
 
             adminDetail = newAdmin;
         }
+
+        if (adminDetail) {
+            
+            // Register the admin in group_user
+            const adminRegister = await prisma.v_user_groups.create({
+                data: {
+                    user_group_uuid: uuidv4(),
+                    domain_uuid: defaultDomain.domain_uuid,
+                    group_name: adminInfo.group_name,
+                    group_uuid: adminInfo.group_uuid,
+                    user_uuid: adminDetail.user_uuid,
+                }
+            })
         
-        // Register the admin in group_user
-        const adminRegister = await prisma.v_user_groups.create({
-            data: {
-                user_group_uuid: uuidv4(),
-                domain_uuid: defaultDomain.domain_uuid,
-                group_name: adminInfo.group_name,
-                group_uuid: adminInfo.group_uuid,
-                user_uuid: adminDetail.user_uuid,
-            }
-        })
+            // Get the tokens
+            const token = await generateToken(adminDetail);
     
-        // Get the tokens
-        const token = await generateToken(adminDetail);
-    
-        return res.status(resCode.SUCCESS).json({ token });
+            adminDetail = await prisma.view_users.findUnique({ where: { user_uuid: adminRegister.user_uuid } });
+        
+            return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { admin: adminDetail, token } });
+        }
     } catch (err) {
         console.log(err);
         return res.status(resCode.SERVER_ERROR).json({ msg: err });
@@ -121,7 +125,7 @@ exports.adminLogin = async (req, res) => {
         // Generate a token
         const token = await generateToken(admin);
     
-        return res.status(resCode.SUCCESS).json({ token });
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { admin: adminDetail, token } });
     } catch (err) {
         console.log(err);
         return res.status(resCode.SERVER_ERROR).json({ msg: err });

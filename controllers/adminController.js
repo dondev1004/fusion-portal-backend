@@ -27,7 +27,7 @@ exports.userList = async (req, res) => {
                         // { user_enabled: {equals: 'true'} },
                     ],
                     OR: [
-                    {group_level: { lt: userRole.ADMIN + 1 }},
+                    {group_level: { lt: user.group_level + 1 }},
                     {group_level: { equals: null }},
                     ],
                 }, skip, take,
@@ -40,7 +40,7 @@ exports.userList = async (req, res) => {
                         // { user_enabled: {equals: 'true'} },
                     ],
                     OR: [
-                    {group_level: { lt: userRole.ADMIN + 1 }},
+                    {group_level: { lt: user.group_level + 1 }},
                     {group_level: { equals: null }},
                     ],
                 },
@@ -56,7 +56,7 @@ exports.userList = async (req, res) => {
                         { username: { contains: query, mode: 'insensitive' } },
                         { contact_name: { contains: query, mode: 'insensitive' } },
                         { group_names: { contains: query, mode: 'insensitive' } },
-                        { group_level: { equals: userRole.ADMIN + 1 } },
+                        { group_level: { equals: user.group_level + 1 } },
                     ],
                 },
                 skip,
@@ -73,7 +73,7 @@ exports.userList = async (req, res) => {
                         { username: { contains: query, mode: 'insensitive' } },
                         { contact_name: { contains: query, mode: 'insensitive' } },
                         { group_names: { contains: query, mode: 'insensitive' } },
-                        { group_level: { equals: userRole.ADMIN + 1 } },
+                        { group_level: { equals: user.group_level + 1 } },
                     ],
                 },
             });

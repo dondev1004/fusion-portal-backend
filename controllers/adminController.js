@@ -1,4 +1,4 @@
-const { hash, verify } = require('node-php-password');
+const { hash } = require('node-php-password');
 const { v4: uuidv4 } = require('uuid');
 const { prisma } = require('../utils/prisma');
 const { resCode, resMessage } = require('../utils/resCode');

@@ -9,7 +9,7 @@ router.get('/user_create', adminController.userCreate);
 router.get('/user_update/:id', adminController.userUpdate);
 router.put('/user_update/:id', adminController.userUpdate);
 router.get('/user_read/:id', adminController.userRead);
-router.delete('/user_delete/:id', adminController.userDelete);
+router.put('/user_set_status/:id', adminController.userSetStatus);
 
 // domain crud and search function
 router.get('/domain_list', adminController.domainList);

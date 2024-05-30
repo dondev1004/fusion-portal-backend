@@ -39,6 +39,7 @@ const resMessage = {
     REQUIRE_NAME: "Name is a required field",
     INVALID_USER: "Username or Password is incorrect",
     UNREGISTER_USER: 'The user is not registered',
+    UNREGISTER_DATA: 'The data is not registered',
     CURRENT_PASSWORD_INCORRECT: "Current Password is incorrect",
     PASSWORD_NOT_EQUAL: "Confirm password must be equal with password",
     ALREADY_EXIST: "The request data already exist",

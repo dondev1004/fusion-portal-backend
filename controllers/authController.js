@@ -7,6 +7,40 @@ const { v4: uuidv4 } = require('uuid');
 const { userRole } = require('../utils/userRole');
 const { checkPassword } = require('../utils/checkPassword');
 const { checkEmail } = require('../utils/checkEmail');
+const nodemailer = require('nodemailer');
+
+exports.adminVerify = async (req, res) => {
+    console.log("step -------- 1");
+
+    let mailTransporter = await nodemailer.createTransport(
+        {
+            service: 'gmail',
+            auth: {
+                user: 'ginik0108@gmail.com',
+                pass: 'rdhokxbadyfuilyf'
+            }
+        }
+    );
+
+    console.log("step -------- 2");
+
+    let mailDetails = {
+        from: 'comsuper0030@gmail.com',
+        to: 'ginik0108@gmail.com',
+        subject: 'Test mail',
+        text: 'Node.js testing mail for GeeksforGeeks'
+    };
+
+    console.log("step -------- 3");
+
+    mailTransporter.sendMail(mailDetails, (err, data) => {
+        if (err) {
+            console.log('Error Occurs', err);
+        } else {
+            console.log('Email sent successfully');
+        }
+    });
+}
 
 exports.adminRegister = async (req, res) => {
     try {
@@ -61,7 +95,7 @@ exports.adminRegister = async (req, res) => {
                     user_email: email,
                     password: await hash(password, process.env.PASSWORD_DEFAULT, { cost: 10 }),
                     contact_uuid: newContact.contact_uuid,
-                    user_enabled: 'true',
+                    user_enabled: 'false',
                     add_date: new Date(),
                 },
             });

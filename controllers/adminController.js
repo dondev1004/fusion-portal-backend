@@ -368,7 +368,7 @@ exports.domainList = async (req, res) => {
         if (isEmpty(query)) {
             domains = await prisma.v_domains.findMany({ skip, take });
 
-            totalDomains = await prisma.v_domains.findMany({ where: { domain_enabled: true } });
+            totalDomains = await prisma.v_domains.findMany();
         } else {
             domains = await prisma.v_domains.findMany({
                 where: {
@@ -383,7 +383,6 @@ exports.domainList = async (req, res) => {
 
             totalDomains = await prisma.v_domains.findMany({
                 where: {
-                    AND: [{ domain_enabled: { equals: true } }],
                     OR: [
                         { domain_name: { contains: query, mode: 'insensitive' } },
                         { domain_description: { contains: query, mode: 'insensitive' } },

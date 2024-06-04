@@ -7,7 +7,7 @@ exports.generateToken = async (user) => {
 
 exports.generateVerifyToken = async (user) => {
 	const id = user.user_uuid;
-	return await jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '12h' });
+	return await jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '10m' });
 }
 
 exports.verifyToken = async (token) => {

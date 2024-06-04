@@ -78,7 +78,7 @@ exports.adminVerify = async (req, res) => {
         userData.user_email = userEmail.user_email;
         const accessToken = await generateToken(userData);
 
-        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, token: accessToken, admin: userData });
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { token: accessToken, admin: userData } });
 
         
     } catch (err) {

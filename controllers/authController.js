@@ -1,5 +1,5 @@
 const { hash, verify } = require('node-php-password');
-const { generateToken } = require('../utils/tokenGenerators');
+const { generateToken, generateVerifyToken, verifyToken } = require('../utils/tokenGenerators');
 const { prisma } = require('../utils/prisma');
 const { resCode, resMessage } = require('../utils/resCode');
 const { isEmpty } = require('../utils/isEmpty');
@@ -7,39 +7,84 @@ const { v4: uuidv4 } = require('uuid');
 const { userRole } = require('../utils/userRole');
 const { checkPassword } = require('../utils/checkPassword');
 const { checkEmail } = require('../utils/checkEmail');
+const { verifyEmailTemplate } = require('../utils/verifyEmailTemplate');
 const nodemailer = require('nodemailer');
 
-exports.adminVerify = async (req, res) => {
-    console.log("step -------- 1");
+exports.adminResendEmail = async (req, res) => {
+    try {
+        const { user_id } = req.body;
 
-    let mailTransporter = await nodemailer.createTransport(
-        {
+        if (isEmpty(user_id))
+            return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+
+        const adminDetail = await prisma.v_users.findUnique({ where: { user_uuid: user_id } });
+
+        const accessToken = await generateToken(adminDetail);
+
+        let mailTransporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: 'ginik0108@gmail.com',
                 pass: 'rdhokxbadyfuilyf'
             }
-        }
-    );
+        });
+    
+        const verifyToken = await generateVerifyToken(adminDetail);
 
-    console.log("step -------- 2");
+        if (isEmpty(verifyToken)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+    
+        let mailDetails = {
+            from: 'tonionestar1004@gmail.com',
+            to: adminDetail.user_email,
+            subject: 'Email Verify Test',
+            html: verifyEmailTemplate(adminDetail.username, process.env.VERIFY_EMAIL_BASE_LINK
+                + `?verify=${verifyToken}` + `?user_uuid=${adminDetail.user_uuid}`),
+        };
+    
+        mailTransporter.sendMail(mailDetails, (err, data) => {
+            if (err) {
+                console.log('Error Occurs', err);
+                return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+            }
+        });
 
-    let mailDetails = {
-        from: 'comsuper0030@gmail.com',
-        to: 'ginik0108@gmail.com',
-        subject: 'Test mail',
-        text: 'Node.js testing mail for GeeksforGeeks'
-    };
+    } catch (err) {
+        console.log(err);
+        return res.status(resCode.SERVER_ERROR).json({ msg: err });
+    } 
+}
 
-    console.log("step -------- 3");
+exports.adminVerify = async (req, res) => {
+    try {
+        const { verify, user_id } = req.body;
 
-    mailTransporter.sendMail(mailDetails, (err, data) => {
-        if (err) {
-            console.log('Error Occurs', err);
-        } else {
-            console.log('Email sent successfully');
-        }
-    });
+        if (isEmpty(verify) && isEmpty(user_id))
+            return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+
+        const decoded = await verifyToken(verify);
+
+        if (decoded && user_id != decoded.id)
+            return res.status(resCode.BAD_REQUEST).json({ msg: resMessage.BAD_REQUEST });
+
+        const userData = await prisma.view_users.findUnique({ where: { user_uuid: decoded.id } });
+        const userEmail = await prisma.v_users.update({ 
+            where: { user_uuid: decoded.id },
+            data: { user_enabled: 'true' },
+        });
+        
+        if (isEmpty(userData) && isEmpty(userEmail))
+            return res.status(resCode.UNREGISTER_USER).json({ msg: resMessage.UNREGISTER_USER });
+        
+        userData.user_email = userEmail.user_email;
+        const accessToken = await generateToken(userData);
+
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, token: accessToken, admin: userData });
+
+        
+    } catch (err) {
+        console.log(err);
+        return res.status(resCode.SERVER_ERROR).json({ msg: err });
+    }
 }
 
 exports.adminRegister = async (req, res) => {
@@ -114,14 +159,36 @@ exports.adminRegister = async (req, res) => {
                     group_uuid: adminInfo.group_uuid,
                     user_uuid: adminDetail.user_uuid,
                 }
-            })
+            });
+
+            let mailTransporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'ginik0108@gmail.com',
+                    pass: 'rdhokxbadyfuilyf'
+                }
+            });
         
-            // Get the tokens
-            const token = await generateToken(adminDetail);
-    
-            adminDetail = await prisma.view_users.findUnique({ where: { user_uuid: adminRegister.user_uuid } });
+            const verifyToken = await generateVerifyToken(adminDetail);
+
+            if (isEmpty(verifyToken)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
         
-            return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { admin: adminDetail, token } });
+            let mailDetails = {
+                from: 'tonionestar1004@gmail.com',
+                to: adminDetail.user_email,
+                subject: 'Email Verify Test',
+                html: verifyEmailTemplate(adminDetail.username, process.env.VERIFY_EMAIL_BASE_LINK
+                    + `?verify=${verifyToken}` + `?user_uuid=${adminDetail.user_uuid}`),
+            };
+        
+            mailTransporter.sendMail(mailDetails, (err, data) => {
+                if (err) {
+                    console.log('Error Occurs', err);
+                    return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+                }
+            });
+        
+            return res.status(resCode.SUCCESS).json({ msg: `Verify email was sent your email(${adminDetail.user_email})` });
         }
     } catch (err) {
         console.log(err);

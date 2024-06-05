@@ -7,6 +7,8 @@ const { userRole } = require('../utils/userRole');
 const { checkPassword } = require('../utils/checkPassword');
 const { checkEmail } = require('../utils/checkEmail');
 const { checkDomain } = require('../utils/checkDomain');
+const { encryptMd5, encryptSha256 } = require('../utils/encrypt');
+const { addGDMSSite, GetGDMSSiteList, editGDMSSite, GetGDMSAccessToken } = require('./syncController');
 
 exports.userList = async (req, res) => {
     const query = req.query.search;
@@ -425,6 +427,21 @@ exports.domainCreate = async (req, res) => {
 
         if (isEmpty(newDomain)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.CREATE_FAILED });
 
+        const timestamp = Math.floor(Date.now());
+        const tokenData = await GetGDMSAccessToken();
+        const accessToken = tokenData.data.access_token;
+
+        const domainData = {
+            siteName: newDomain.domain_name,
+            siteDesc: newDomain.domain_description,
+        }
+
+        const addSite = await addGDMSSite(accessToken, timestamp, domainData);
+        console.log(addSite.data);
+
+        if (isEmpty(addSite))
+            return res.status(resCode.CREATED_NOT_SYNC).json({ msg: resMessage.CREATED_NOT_SYNC });
+
         return res.status(resCode.CREATED).json({ msg: resMessage.CREATED });
     } catch (err) {
         console.log(err);
@@ -467,7 +484,7 @@ exports.domainUpdate = async (req, res) => {
 
             if (!checkDomain(domain_name)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NOT_DOMAIN });
 
-            const domain = await prisma.v_domains.findFirst({
+            const oldDomain = await prisma.v_domains.findFirst({
                 where: {
                     AND: [
                         { domain_name: { equals: domain_name, mode: 'default' } },
@@ -476,7 +493,7 @@ exports.domainUpdate = async (req, res) => {
                 },
             });
 
-            if (!isEmpty(domain)) return res.status(resCode.ALREADY_EXIST).json({ msg: resMessage.ALREADY_EXIST });
+            if (!isEmpty(oldDomain)) return res.status(resCode.ALREADY_EXIST).json({ msg: resMessage.ALREADY_EXIST });
 
             const newDomain = await prisma.v_domains.update({
                 where: { domain_uuid: id },
@@ -489,6 +506,38 @@ exports.domainUpdate = async (req, res) => {
             });
 
             if (isEmpty(newDomain)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.UPDATE_FAILED });
+
+            if (domain.domain_name !== domain_name || domain.domain_description !== domain_description) {
+                const tokenData = await GetGDMSAccessToken();
+                const accessToken = tokenData.data.access_token;
+                const timestamp = Math.floor(Date.now());
+    
+                const signatureObject = {
+                    access_token: accessToken,
+                    client_id: process.env.GDMS_CLIENT_ID,
+                    client_secret:process.env.GDMS_CLIENT_SECRET,
+                    timestamp: timestamp,
+                };
+    
+                const signatureUrl = new URLSearchParams(signatureObject).toString();
+                const signature = encryptSha256(`&${signatureUrl}&`);
+    
+                const domainList = await GetGDMSSiteList(accessToken, signature, timestamp);
+
+                if (isEmpty(domainList.data.data))
+                    return res.status(resCode.UPDATED_NOT_SYNC).json({ msg: resMessage.UPDATED_NOT_SYNC, data: newDomain });
+
+                domainList.data.data.result.forEach(async item => {
+                    if (item.siteName == domain.domain_name) {
+                        const updateData = {
+                            id: item.id,
+                            siteName: newDomain.domain_name,
+                            siteDesc: newDomain.domain_description,
+                        }
+                        await editGDMSSite(accessToken, timestamp, updateData);
+                    }
+                });
+            }
 
             return res.status(resCode.SUCCESS).json({ msg: resMessage.UPDATED, data: newDomain });
         }

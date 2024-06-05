@@ -22,5 +22,6 @@ router.put('/domain_set_status/:id', adminController.domainSetStatus);
 
 // sync with domain in fusion and organization in GDMS
 router.post('/sync_domain_to_site', syncController.fusionToGdmsSyncSite);
+// router.post('/create_domain_to_site', syncController.addGDMSSite);
 
 module.exports = router;

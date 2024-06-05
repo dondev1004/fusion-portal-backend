@@ -1,6 +1,8 @@
 const resCode = {
     SUCCESS: 200,
     CREATED: 201,
+    CREATED_NOT_SYNC: 204,
+    UPDATED_NOT_SYNC: 205,
 
     BAD_REQUEST: 400,
     UNAUTHORIZED: 417,
@@ -33,6 +35,8 @@ const resMessage = {
     NO_EXIST: "No Exist",
     CREATED: "Created successfully",
     UPDATED: "Updated successfully",
+    CREATED_NOT_SYNC: "Created successfully, not synced",
+    UPDATED_NOT_SYNC: "Updated successfully, not synced",
     DELETED: "Deleted successfully",
     SETEDSTATUS: "Updated status successfully",
     SUCCESS: "Success",

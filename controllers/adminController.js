@@ -576,3 +576,45 @@ exports.domainSetStatus = async (req, res) => {
         return res.status(resCode.SERVER_ERROR).json({ msg: err });
     }
 }
+
+exports.extensionList = async (req, res) => {
+    const query = req.query.search;
+    const { page = 1, pageSize = 10 } = req.query;
+    const skip = (page - 1) * pageSize;
+    const take = parseInt(pageSize);
+    const user = req.user;
+
+    let extensions;
+    let totalExtensions;
+
+    try {
+        if (isEmpty(query)) {
+            extensions = await prisma.v_extensions.findMany({ skip, take });
+
+            totalExtensions = await prisma.v_extensions.findMany();
+        } else {
+            extensions = await prisma.v_extensions.findMany({
+                where: {
+                    OR: [
+                        { extension: { contains: query, mode: 'insensitive' } },
+                        { effective_caller_id_name: { contains: query, mode: 'insensitive' } },
+                        { outbound_caller_id_name: { contains: query, mode: 'insensitive' } },
+                        { outbound_caller_id_number: { contains: query, mode: 'insensitive' } },
+                        { directory_first_name: { contains: query, mode: 'insensitive' } },
+                        { directory_last_name: { contains: query, mode: 'insensitive' } },
+                        { extension: { contains: query, mode: 'insensitive' } },
+                        { extension: { contains: query, mode: 'insensitive' } },
+                        { extension: { contains: query, mode: 'insensitive' } },
+                        { extension: { contains: query, mode: 'insensitive' } },
+                    ],
+                },
+                skip,
+                take,
+            });
+        }
+        
+    } catch (err) {
+        console.log(err);
+        return res.status(resCode.SERVER_ERROR).json({ msg: err });
+    }
+}

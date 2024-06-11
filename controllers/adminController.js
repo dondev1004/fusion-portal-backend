@@ -9,6 +9,7 @@ const { checkEmail } = require('../utils/checkEmail');
 const { checkDomain } = require('../utils/checkDomain');
 const { encryptMd5, encryptSha256 } = require('../utils/encrypt');
 const { addGDMSSite, GetGDMSSiteList, editGDMSSite, GetGDMSAccessToken } = require('./syncController');
+const { generatePassword } = require('../utils/generatePassword');
 
 exports.userList = async (req, res) => {
     const query = req.query.search;
@@ -92,9 +93,6 @@ exports.userList = async (req, res) => {
 }
 
 exports.userCreate = async (req, res) => {
-    // const languages = await prisma.v_languages.findMany({ distinct: ['language', 'code'] });
-    // const timeZones = await prisma.v_countries.findMany({ distinct: ['country', 'iso_a2', 'iso_a3', 'num', 'country_code'] });
-
     let groups;
     let domains;
 
@@ -602,17 +600,207 @@ exports.extensionList = async (req, res) => {
                         { outbound_caller_id_number: { contains: query, mode: 'insensitive' } },
                         { directory_first_name: { contains: query, mode: 'insensitive' } },
                         { directory_last_name: { contains: query, mode: 'insensitive' } },
-                        { extension: { contains: query, mode: 'insensitive' } },
-                        { extension: { contains: query, mode: 'insensitive' } },
-                        { extension: { contains: query, mode: 'insensitive' } },
-                        { extension: { contains: query, mode: 'insensitive' } },
+                        { user_context: { contains: query, mode: 'insensitive' } },
+                        { description: { contains: query, mode: 'insensitive' } },
                     ],
                 },
                 skip,
                 take,
             });
+
+            totalExtensions = await prisma.v_extensions.findMany({
+                where: {
+                    OR: [
+                        { extension: { contains: query, mode: 'insensitive' } },
+                        { effective_caller_id_name: { contains: query, mode: 'insensitive' } },
+                        { outbound_caller_id_name: { contains: query, mode: 'insensitive' } },
+                        { outbound_caller_id_number: { contains: query, mode: 'insensitive' } },
+                        { directory_first_name: { contains: query, mode: 'insensitive' } },
+                        { directory_last_name: { contains: query, mode: 'insensitive' } },
+                        { user_context: { contains: query, mode: 'insensitive' } },
+                        { description: { contains: query, mode: 'insensitive' } },
+                    ],
+                },
+            });
         }
+
+        const totalCount = totalExtensions.length;
+        const totalPages = Math.ceil(totalCount / take);
+
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { extensions, totalCount, totalPages, page, pageSize } });
+    } catch (err) {
+        console.log(err);
+        return res.status(resCode.SERVER_ERROR).json({ msg: err });
+    }
+}
+
+exports.extensionCreate = async (req, res) => {
+    if (req.method == 'GET') {
+        const domains = await prisma.v_domains.findMany({ where: { domain_enabled: true }});
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { domains } });
+    } else if (req.method == 'POST') {
+        try {
+            const {
+                domain_uuid,
+                extension,
+                password,
+                effective_caller_id_name,
+                effective_caller_id_number,
+                outbound_caller_id_name,
+                outbound_caller_id_number,
+                directory_first_name,
+                directory_last_name,
+                directory_visible,
+                directory_exten_visible,
+                call_timeout = 60,
+                do_not_disturb,
+                follow_me_uuid,
+                follow_me_enabled,
+                follow_me_destinations,
+                description,
+            } = req.body;
         
+            if (domain_uuid) {
+                const verifyDomain = await prisma.v_domains.findUnique({ where: { domain_uuid: domain_uuid } });
+                if (isEmpty(verifyDomain)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+            }
+        
+            const newExtension = await prisma.v_extensions.create({ data: {
+                extension_uuid: uuidv4(),
+                domain_uuid: domain_uuid,
+                extension: extension,
+                password: password ? '' : generatePassword(),
+                effective_caller_id_name: effective_caller_id_name,
+                effective_caller_id_name: effective_caller_id_number,
+                outbound_caller_id_name: outbound_caller_id_name,
+                outbound_caller_id_number: outbound_caller_id_number,
+                directory_first_name: directory_first_name,
+                directory_last_name: directory_last_name,
+                directory_visible: directory_visible,
+                directory_exten_visible: directory_exten_visible,
+                call_timeout: call_timeout,
+                do_not_disturb: do_not_disturb,
+                follow_me_uuid: follow_me_uuid,
+                follow_me_enabled: follow_me_enabled,
+                follow_me_destinations: follow_me_destinations,
+                enabled: 'true',
+                description: description,
+                insert_date: new Date(),
+                insert_user: user.user_uuid,
+            }});
+        
+            if (isEmpty(newExtension)) return res.status(resCode.NO_EXIST).json(resMessage.NO_EXIST);
+        
+            return res.status(resCode.CREATED).json({ msg: resMessage.CREATED });
+        } catch (err) {
+            console.log(err);
+            return res.status(resCode.SERVER_ERROR).json({ msg: err });
+        }
+    }
+    
+    
+}
+
+exports.extensionUpdate = async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    if (isEmpty(id)) return res.status(resCode.BAD_REQUEST).json({ msg: resMessage.BAD_REQUEST });
+
+    if (req.method == 'GET') {
+        const current_domain = prisma.v_domains.findUnique({ where: { domain_uuid: id, domain_enabled: true }});
+        const domains = await prisma.v_domains.findMany({ where: { domain_enabled: true }});
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { current_domain, domains } });
+    } else if (req.method == 'PUT') {
+        try {
+            const {
+                domain_uuid,
+                extension,
+                password,
+                effective_caller_id_name,
+                effective_caller_id_number,
+                outbound_caller_id_name,
+                outbound_caller_id_number,
+                directory_first_name,
+                directory_last_name,
+                directory_visible,
+                directory_exten_visible,
+                call_timeout = 60,
+                do_not_disturb,
+                follow_me_uuid,
+                follow_me_enabled,
+                follow_me_destinations,
+                description,
+            } = req.body;
+        
+            if (domain_uuid) {
+                const verifyDomain = await prisma.v_domains.findUnique({ where: { domain_uuid: domain_uuid } });
+                if (isEmpty(verifyDomain)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+            }
+        
+            const updatedExtension = await prisma.v_extensions.update({ 
+                where: { extension_uuid: id },
+                data: {
+                    extension_uuid: uuidv4(),
+                    domain_uuid: domain_uuid,
+                    extension: extension,
+                    password: password ? '' : generatePassword(),
+                    effective_caller_id_name: effective_caller_id_name,
+                    effective_caller_id_name: effective_caller_id_number,
+                    outbound_caller_id_name: outbound_caller_id_name,
+                    outbound_caller_id_number: outbound_caller_id_number,
+                    directory_first_name: directory_first_name,
+                    directory_last_name: directory_last_name,
+                    directory_visible: directory_visible,
+                    directory_exten_visible: directory_exten_visible,
+                    call_timeout: call_timeout,
+                    do_not_disturb: do_not_disturb,
+                    follow_me_uuid: follow_me_uuid,
+                    follow_me_enabled: follow_me_enabled,
+                    follow_me_destinations: follow_me_destinations,
+                    enabled: 'true',
+                    description: description,
+                    update_user: user.username,
+                    update_date: new Date(),
+                }
+            });
+        
+            if (isEmpty(updatedExtension)) return res.status(resCode.NO_EXIST).json(resMessage.NO_EXIST);
+        
+            return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS });
+        } catch (err) {
+            console.log(err);
+            return res.status(resCode.SERVER_ERROR).json({ msg: err });
+        }
+    }
+    
+    
+}
+
+exports.extensionSetStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = req.user;
+
+        if (isEmpty(id)) return res.status(resCode.BAD_REQUEST).json({ msg: resMessage.BAD_REQUEST });
+
+        const extension = await prisma.v_extensions.findUnique({ where: { extension_uuid: id } });
+
+        if (isEmpty(extension)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+
+        const updatedExtensionStatus = await prisma.v_extensions.update({
+            where: { extension_uuid: id },
+            data: {
+                enabled: extension.enabled == 'true' ? 'false' : 'true',
+                update_date: new Date(),
+                update_user: user.user_uuid,
+            },
+        });
+
+        if (isEmpty(updatedExtensionStatus))
+            return res.status(resCode.NO_EXIST).json({ msg: resMessage.SETEDSTATUS_FAILED });
+
+        return res.status(resCode.SUCCESS).json({ msg: resMessage.SETEDSTATUS, data: updatedExtensionStatus });
     } catch (err) {
         console.log(err);
         return res.status(resCode.SERVER_ERROR).json({ msg: err });

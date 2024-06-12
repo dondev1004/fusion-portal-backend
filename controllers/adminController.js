@@ -580,7 +580,6 @@ exports.extensionList = async (req, res) => {
     const { page = 1, pageSize = 10 } = req.query;
     const skip = (page - 1) * pageSize;
     const take = parseInt(pageSize);
-    const user = req.user;
 
     let extensions;
     let totalExtensions;
@@ -635,6 +634,7 @@ exports.extensionList = async (req, res) => {
 }
 
 exports.extensionCreate = async (req, res) => {
+    const user = req.user;
     if (req.method == 'GET') {
         const domains = await prisma.v_domains.findMany({ where: { domain_enabled: true }});
         return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { domains } });
@@ -646,8 +646,8 @@ exports.extensionCreate = async (req, res) => {
                 password,
                 effective_caller_id_name,
                 effective_caller_id_number,
-                outbound_caller_id_name,
-                outbound_caller_id_number,
+                // outbound_caller_id_name,
+                // outbound_caller_id_number,
                 directory_first_name,
                 directory_last_name,
                 directory_visible,
@@ -658,31 +658,39 @@ exports.extensionCreate = async (req, res) => {
                 follow_me_enabled,
                 follow_me_destinations,
                 description,
+                voicemail,
+                email,
+                voicemail_password,
+                voicemail_file,
             } = req.body;
         
             if (domain_uuid) {
                 const verifyDomain = await prisma.v_domains.findUnique({ where: { domain_uuid: domain_uuid } });
                 if (isEmpty(verifyDomain)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
             }
+
+            if (!checkEmail(voicemail))
+                return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
         
             const newExtension = await prisma.v_extensions.create({ data: {
                 extension_uuid: uuidv4(),
                 domain_uuid: domain_uuid,
-                extension: extension,
+                extension: extension.toString(),
                 password: password ? '' : generatePassword(),
                 effective_caller_id_name: effective_caller_id_name,
-                effective_caller_id_name: effective_caller_id_number,
-                outbound_caller_id_name: outbound_caller_id_name,
-                outbound_caller_id_number: outbound_caller_id_number,
+                effective_caller_id_number: effective_caller_id_number ? effective_caller_id_number.toString() : '',
+                // outbound_caller_id_name: outbound_caller_id_name,
+                // outbound_caller_id_number: outbound_caller_id_number,
+                missed_call_data: email,
                 directory_first_name: directory_first_name,
                 directory_last_name: directory_last_name,
-                directory_visible: directory_visible,
-                directory_exten_visible: directory_exten_visible,
+                directory_visible: directory_visible == true ? 'true' : 'false',
+                directory_exten_visible: directory_exten_visible == true ? 'true' : 'false',
                 call_timeout: call_timeout,
-                do_not_disturb: do_not_disturb,
-                follow_me_uuid: follow_me_uuid,
-                follow_me_enabled: follow_me_enabled,
-                follow_me_destinations: follow_me_destinations,
+                do_not_disturb: do_not_disturb == true ? 'true' : 'false',
+                // // follow_me_uuid: follow_me_uuid,
+                // // follow_me_enabled: follow_me_enabled,
+                // // follow_me_destinations: follow_me_destinations,
                 enabled: 'true',
                 description: description,
                 insert_date: new Date(),
@@ -690,15 +698,32 @@ exports.extensionCreate = async (req, res) => {
             }});
         
             if (isEmpty(newExtension)) return res.status(resCode.NO_EXIST).json(resMessage.NO_EXIST);
-        
+
+            if (voicemail) {
+                const newVoicemail = await prisma.v_voicemails.create({
+                    data: {
+                        voicemail_uuid: uuidv4(),
+                        voicemail_id: toString(extension),
+                        domain_uuid: domain_uuid,
+                        voicemail_password: voicemail_password,
+                        voicemail_mail_to: voicemail,
+                        voicemail_enabled: 'true',
+                        voicemail_local_after_email: 'true',
+                        voicemail_file: voicemail_file,
+                        insert_date: new Date(),
+                        insert_user: user.user_uuid,
+                    }
+                });
+    
+                if (isEmpty(newVoicemail)) return res.status(resCode.NO_EXIST).json(resMessage.NO_EXIST);
+            }
+
             return res.status(resCode.CREATED).json({ msg: resMessage.CREATED });
         } catch (err) {
             console.log(err);
             return res.status(resCode.SERVER_ERROR).json({ msg: err });
         }
     }
-    
-    
 }
 
 exports.extensionUpdate = async (req, res) => {
@@ -708,9 +733,16 @@ exports.extensionUpdate = async (req, res) => {
     if (isEmpty(id)) return res.status(resCode.BAD_REQUEST).json({ msg: resMessage.BAD_REQUEST });
 
     if (req.method == 'GET') {
-        const current_domain = prisma.v_domains.findUnique({ where: { domain_uuid: id, domain_enabled: true }});
+        const current_extension = await prisma.v_extensions.findUnique({ where: {extension_uuid: id}});
+        if (isEmpty(current_extension)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
+
+        const current_voicemail = await prisma.v_voicemails.findFirst({ where: { voicemail_id: current_extension.extension } });
+
         const domains = await prisma.v_domains.findMany({ where: { domain_enabled: true }});
-        return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { current_domain, domains } });
+        return res.status(resCode.SUCCESS).json({ 
+            msg: resMessage.SUCCESS,
+            data: { current_extension, current_voicemail, domains },
+        });
     } else if (req.method == 'PUT') {
         try {
             const {
@@ -719,8 +751,6 @@ exports.extensionUpdate = async (req, res) => {
                 password,
                 effective_caller_id_name,
                 effective_caller_id_number,
-                outbound_caller_id_name,
-                outbound_caller_id_number,
                 directory_first_name,
                 directory_last_name,
                 directory_visible,
@@ -731,8 +761,14 @@ exports.extensionUpdate = async (req, res) => {
                 follow_me_enabled,
                 follow_me_destinations,
                 description,
+                voicemail,
+                email,
+                voicemail_password,
+                voicemail_file,
+                extension_enable,
+                voicemail_enabled,
             } = req.body;
-        
+
             if (domain_uuid) {
                 const verifyDomain = await prisma.v_domains.findUnique({ where: { domain_uuid: domain_uuid } });
                 if (isEmpty(verifyDomain)) return res.status(resCode.NO_EXIST).json({ msg: resMessage.NO_EXIST });
@@ -741,40 +777,54 @@ exports.extensionUpdate = async (req, res) => {
             const updatedExtension = await prisma.v_extensions.update({ 
                 where: { extension_uuid: id },
                 data: {
-                    extension_uuid: uuidv4(),
                     domain_uuid: domain_uuid,
-                    extension: extension,
+                    extension: extension.toString(),
                     password: password ? '' : generatePassword(),
                     effective_caller_id_name: effective_caller_id_name,
-                    effective_caller_id_name: effective_caller_id_number,
-                    outbound_caller_id_name: outbound_caller_id_name,
-                    outbound_caller_id_number: outbound_caller_id_number,
+                    effective_caller_id_number: effective_caller_id_number ? effective_caller_id_number.toString() : '',
+                    // outbound_caller_id_name: outbound_caller_id_name,
+                    // outbound_caller_id_number: outbound_caller_id_number,
+                    missed_call_data: email,
                     directory_first_name: directory_first_name,
                     directory_last_name: directory_last_name,
-                    directory_visible: directory_visible,
-                    directory_exten_visible: directory_exten_visible,
+                    directory_visible: directory_visible == true ? 'true' : 'false',
+                    directory_exten_visible: directory_exten_visible == true ? 'true' : 'false',
                     call_timeout: call_timeout,
-                    do_not_disturb: do_not_disturb,
-                    follow_me_uuid: follow_me_uuid,
-                    follow_me_enabled: follow_me_enabled,
-                    follow_me_destinations: follow_me_destinations,
-                    enabled: 'true',
+                    do_not_disturb: do_not_disturb == true ? 'true' : 'false',
+                    // // follow_me_uuid: follow_me_uuid,
+                    // // follow_me_enabled: follow_me_enabled,
+                    // // follow_me_destinations: follow_me_destinations,
+                    enabled: extension_enable == true ? 'true' : 'false',
                     description: description,
-                    update_user: user.username,
+                    update_user: user.user_uuid,
                     update_date: new Date(),
                 }
             });
-        
+
             if (isEmpty(updatedExtension)) return res.status(resCode.NO_EXIST).json(resMessage.NO_EXIST);
+
+            const updateVoicemail = await prisma.v_voicemails.create({
+                data: {
+                    voicemail_id: toString(extension),
+                    domain_uuid: domain_uuid,
+                    voicemail_password: voicemail_password,
+                    voicemail_mail_to: voicemail,
+                    voicemail_enabled: voicemail_enabled == true ? 'true' : 'false',
+                    voicemail_local_after_email: voicemail_enabled == true ? 'true' : 'false',
+                    voicemail_file: voicemail_file,
+                    insert_date: new Date(),
+                    insert_user: user.user_uuid,
+                }
+            });
+
+            if (isEmpty(updateVoicemail)) return res.status(resCode.NO_EXIST).json(resMessage.NO_EXIST);
         
-            return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS });
+            return res.status(resCode.SUCCESS).json({ msg: resMessage.SUCCESS, data: { updatedExtension, updateVoicemail } });
         } catch (err) {
             console.log(err);
             return res.status(resCode.SERVER_ERROR).json({ msg: err });
         }
     }
-    
-    
 }
 
 exports.extensionSetStatus = async (req, res) => {

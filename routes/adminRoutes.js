@@ -28,5 +28,6 @@ router.get('/extension_create', adminController.extensionCreate);
 router.post('/extension_create', adminController.extensionCreate);
 router.get('/extension_update/:id', adminController.extensionUpdate);
 router.put('/extension_update/:id', adminController.extensionUpdate);
+router.put('/extension_set_status/:id', adminController.extensionSetStatus);
 
 module.exports = router;

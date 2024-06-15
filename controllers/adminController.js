@@ -703,7 +703,7 @@ exports.extensionCreate = async (req, res) => {
                 const newVoicemail = await prisma.v_voicemails.create({
                     data: {
                         voicemail_uuid: uuidv4(),
-                        voicemail_id: toString(extension),
+                        voicemail_id: extension.toString(),
                         domain_uuid: domain_uuid,
                         voicemail_password: voicemail_password,
                         voicemail_mail_to: voicemail,
